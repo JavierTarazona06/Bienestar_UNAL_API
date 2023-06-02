@@ -11,7 +11,7 @@ app = FastAPI()
 
 url = URL.create(
     drivername=os.environ["DRIVER"],
-    username=os.environ["USER"],
+    username=os.environ["USERNAME"],
     password=os.environ["PASSWORD"],
     host=os.environ["HOST"],
     database=os.environ["DATABASE"],
