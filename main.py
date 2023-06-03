@@ -10,13 +10,21 @@ from typing import Any
 app = FastAPI()
 
 url = URL.create(
-    drivername=os.getenv("DRIVER"),
-    username=os.getenv("USERNAME"),
-    password=os.getenv("PASSWORD"),
-    host=os.getenv("HOST"),
-    database=os.getenv("DATABASE"),
-    port=int(os.getenv("PORT"))
+    drivername=os.environ["DRIVER"],
+    username=os.environ["USERNAME"],
+    password=os.environ["PASSWORD"],
+    host=os.environ["HOST"],
+    database=os.environ["DATABASE"],
+    port=int(os.environ["PORT"])
 )
+
+print(type(os.environ["DRIVER"]), os.environ["DRIVER"])
+print(type(os.environ["USERNAME"]), os.environ["USERNAME"])
+print(type(os.environ["PASSWORD"]), os.environ["PASSWORD"])
+print(type(os.environ["HOST"]), os.environ["HOST"])
+print(type(os.environ["DATABASE"]), os.environ["DATABASE"])
+print(type(os.environ["PORT"]), os.environ["PORT"])
+
 
 engine = create_engine(url)
 
