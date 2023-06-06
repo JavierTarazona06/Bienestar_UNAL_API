@@ -10,8 +10,6 @@ from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
 
-load_dotenv()
-
 url = URL.create(
     drivername=os.environ["DRIVER"],
     username=os.environ["NAME_USER"],
