@@ -130,7 +130,10 @@ def call_procedure(procedure: str, name_columns: list[str] | None, args: list[An
     """
     cursor = connection.cursor()
     try:
-        cursor.callproc(procedure, args)
+        if args is None:
+            cursor.callproc(procedure)
+        else:
+            cursor.callproc(procedure, args)
     except errors.ProgrammingError as e:
         return [{'Key': 0, 'Answer': e}]
     except errors.DatabaseError as e:
