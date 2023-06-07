@@ -44,6 +44,8 @@ while True:
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
+#---Salud-------------------------------
+
 
 @app.get("/citas_medicas_disponibles", tags=["Salud"])
 async def select_citamedicas():
@@ -117,6 +119,14 @@ async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, ti
 @app.get("/select_perfilriesgo/{user_id}", tags=["Salud"])
 async def select_perfilriesgo(user_id: int):
     rows = call_procedure('pas_view_perfilriesgo', ['Fecha', 'Fisico', 'Psicologico'], [user_id])
+    return jsonable_encoder(rows)
+
+
+#---Económico-------------------------------
+
+@app.get("/select_convfomentoemprend/{user_id}/{tema}", tags=["Económico"])
+async def select_convfomentoemprend(user_id: int, tema:str):
+    rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est",None,[user_id,tema])
     return jsonable_encoder(rows)
 
 
