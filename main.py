@@ -124,9 +124,21 @@ async def select_perfilriesgo(user_id: int):
 
 #---Económico-------------------------------
 
-@app.get("/select_convfomentoemprend/{user_id}/{tema}", tags=["Económico"])
+@app.get("/convfomentoemprend/{user_id}/{tema}", tags=["Económico"])
 async def select_convfomentoemprend(user_id: int, tema:str):
     rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est",None,[user_id,tema])
+    return jsonable_encoder(rows)
+
+
+@app.get("/falla_alimentacion/{user_id}", tags=["Económico"])
+async def select_falla_alimentacion(user_id: int):
+    rows = call_procedure("sp_fallaalimentacion_est",None,[user_id])
+    return jsonable_encoder(rows)
+
+
+@app.get("/actividad_corresponsabilidad/{user_id}", tags=["Económico"])
+async def select_actividad_corresponsabilidad(user_id: int):
+    rows = call_procedure("sp_actividadcorresp_est",None,[user_id])
     return jsonable_encoder(rows)
 
 
