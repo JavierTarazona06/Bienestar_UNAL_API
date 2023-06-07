@@ -130,7 +130,7 @@ async def select_convfomentoemprend(user_id: int, tema:str):
         rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est",None,[user_id,tema])
         return jsonable_encoder(rows)
     except Exception as e:
-        return {"message_error":e}
+        return {"message_error":str(e)}
 
 
 @app.get("/falla_alimentacion/{user_id}", tags=["Económico"])
@@ -139,7 +139,7 @@ async def select_falla_alimentacion(user_id: int):
         rows = call_procedure("sp_fallaalimentacion_est",None,[user_id])
         return jsonable_encoder(rows)
     except Exception as e:
-        return {"message_error":e}
+        return {"message_error":str(e)}
 
 
 @app.get("/actividad_corresponsabilidad/{user_id}", tags=["Económico"])
@@ -148,7 +148,7 @@ async def select_actividad_corresponsabilidad(user_id: int):
         rows = call_procedure("sp_actividadcorresp_est",None,[user_id])
         return jsonable_encoder(rows)
     except Exception as e:
-        return {"message_error":e}
+        return {"message_error":str(e)}
 
 
 @app.get("/horas_corresponsabilidad/{user_id}", tags=["Económico"])
@@ -157,7 +157,7 @@ async def select_horas_corresponsabilidad(user_id: int):
         rows = call_procedure("horas_corresponsabilidad_est",None,[user_id])
         return jsonable_encoder(rows)
     except Exception as e:
-        return {"message_error":e}
+        return {"message_error":str(e)}
 
 def call_procedure(procedure: str, name_columns: list[str] | None, args: list[Any] | None) -> list[dict]:
     """
