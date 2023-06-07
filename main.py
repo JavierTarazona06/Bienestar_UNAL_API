@@ -44,85 +44,93 @@ while True:
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
-#---Salud-------------------------------
-
+# ------------------------------------------------ SALUD ---------------------------------------------------------
 
 @app.get("/citas_medicas_disponibles", tags=["Salud"])
 async def select_citamedicas():
-    rows = call_procedure('pas_citas_disponibles', ['Fecha', 'Especialidad', 'Doctor'], None)
+    rows = call_procedure('pas_citas_disponibles')
     return jsonable_encoder(rows)
 
 
 @app.get("/citas_medicas_agendadas/{user_id}", tags=["Salud"])
 async def select_citamedicas_user(user_id: str):
-    rows = call_procedure('pas_citas_agendadas', ['Fecha', 'Especialidad', 'Doctor'], [user_id])
+    rows = call_procedure('pas_citas_agendadas', user_id)
     return jsonable_encoder(rows)
 
 
 @app.put("/cancelar_cita_medica/{user_id}", tags=["Salud"])
 async def delete_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
-    rows = call_procedure('pas_delete_cita_medica', None, [user_id, fecha, especialidad])
+    rows = call_procedure('pas_delete_cita_medica', user_id, fecha, especialidad)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.put("/agendar_cita_medica/{user_id}", tags=["Salud"])
 async def add_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
-    rows = call_procedure('pas_add_cita_medica', None, [user_id, fecha, especialidad])
+    rows = call_procedure('pas_add_cita_medica', user_id, fecha, especialidad)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.get("/resultado_cita_medica/{user_id}", tags=["Salud"])
 async def check_citamedica(user_id: int):
-    rows = call_procedure('pas_check_resultados',
-                          ['Fecha', 'Especialidad', 'Diagnostico', 'Peso', 'Estatura', 'Ritmo_cardiaco', 'Vision',
-                           'Medicamento', 'Cantidad', 'Intervalos', 'Examen'],
-                          [user_id])
+    rows = call_procedure('pas_check_resultados', user_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/incapacidades/{user_id}", tags=["Salud"])
 async def select_incapacidad(user_id: int):
-    rows = call_procedure('pas_view_incapacidad', ['ID', 'Fecha', 'Razon', 'Dias', 'Verificado', 'Aprobado'], [user_id])
+    rows = call_procedure('pas_view_incapacidad', user_id)
     return jsonable_encoder(rows)
 
 
 @app.post("/añadir_incapacidad/{user_id}", tags=["Salud"])
 async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
-    rows = call_procedure('pas_add_incapacidad', None, [user_id, fecha, enfermedad, dias])
+    rows = call_procedure('pas_add_incapacidad', user_id, fecha, enfermedad, dias)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.put("/modificar_incapacidad/", tags=["Salud"])
 async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
-    rows = call_procedure('pas_edit_incapacidad', None, [incapacidad_id, fecha, enfermedad, dias])
+    rows = call_procedure('pas_edit_incapacidad', incapacidad_id, fecha, enfermedad, dias)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.get("/atencionessalud/{user_id}", tags=["Salud"])
 async def select_atencionsalud(user_id: int):
-    rows = call_procedure('pas_view_atencionsalud', ['ID', 'Fecha', 'Tipo', 'Verificado', 'Aprobado'], [user_id])
+    rows = call_procedure('pas_view_atencionsalud', user_id)
     return jsonable_encoder(rows)
 
 
-@app.put("/añadir_atencionsalud/{user_id}", tags=["Salud"])
+@app.post("/añadir_atencionsalud/{user_id}", tags=["Salud"])
 async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
-    rows = call_procedure('pas_add_atencionsalud', None, [user_id, fecha, tipo])
+    rows = call_procedure('pas_add_atencionsalud', user_id, fecha, tipo)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.put("/modificar_atencionsalud/{user_id}", tags=["Salud"])
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
-    rows = call_procedure('pas_edit_atencionsalud', None, [atencionsalud_id, fecha, tipo])
+    rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
 @app.get("/select_perfilriesgo/{user_id}", tags=["Salud"])
 async def select_perfilriesgo(user_id: int):
-    rows = call_procedure('pas_view_perfilriesgo', ['Fecha', 'Fisico', 'Psicologico'], [user_id])
+    rows = call_procedure('pas_view_perfilriesgo', user_id)
     return jsonable_encoder(rows)
 
 
-#---Económico-------------------------------
+# ---------------------------------------------- ECONOMICO -------------------------------------------------------
 
 
 @app.get("/falla_alimentacion/{user_id}", tags=["Económico"])
@@ -133,15 +141,14 @@ async def select_falla_alimentacion(user_id: int):
 
 @app.get("/actividad_corresponsabilidad/{user_id}", tags=["Económico"])
 async def select_actividad_corresponsabilidad(user_id: int):
-    rows = call_procedure("sp_actividadcorresp_est",["actCorID", "actCorActividad", "actCorHoras"],[user_id])
+    rows = call_procedure("sp_actividadcorresp_est", user_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/horas_corresponsabilidad/{user_id}", tags=["Económico"])
 async def select_horas_corresponsabilidad(user_id: int):
-    rows = call_procedure("horas_corresponsabilidad_est",None,[user_id])
+    rows = call_procedure("horas_corresponsabilidad_est", user_id)
     return jsonable_encoder(rows)
-
 
 @app.get("/pbm_estudiante/{user_id}", tags=["Económico"])
 async def select_pbm_estudiante(user_id: int):
@@ -179,12 +186,11 @@ async def select_conv_gestion_alimentaria_todo(user_id: int):
     rows = call_procedure("sp_convocatoriagestionalimentaria",None,[user_id])
     return jsonable_encoder(rows)
 
-
-def call_procedure(procedure: str, name_columns: list[str] | None, args: list[Any] | None) -> list[dict]:
+  
+def call_procedure(procedure: str, *args: Any) -> list[dict]:
     """
     Returns a list with all the rows given a procedure and arguments
 
-    :param name_columns: name of the columns that return the procedure
     :param procedure: function to call
     :param args: arguments for the procedure
     """
@@ -199,21 +205,20 @@ def call_procedure(procedure: str, name_columns: list[str] | None, args: list[An
     except errors.DatabaseError as e:
         return [{'Key': 0, 'Answer': e}]
 
-    answer = None
-    for result in cursor.stored_results():
-        answer = result
+    column_names, rows = [], []
+    for answer in cursor.stored_results():
+        column_names.extend(answer.column_names)
+        rows.extend(answer.fetchall())
 
-    rows = []
-    if answer is not None:
-        for row in enumerate(answer):
-            data = {'Key': row[0]}
-            for i, value in enumerate(row[1]):
-                data[name_columns[i]] = value
-            rows.append(data)
-    else:
-        rows = {'Key': 0, 'Answer': 'Done'}
+    result = []
+    if len(rows) != 0:
+        for key, row in enumerate(rows):
+            data = {'Key': key}
+            for i, value in enumerate(row):
+                data[column_names[i]] = value
+            result.append(data)
 
     cursor.close()
     connection.commit()
 
-    return rows
+    return result
