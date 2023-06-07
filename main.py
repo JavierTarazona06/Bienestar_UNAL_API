@@ -125,7 +125,7 @@ async def select_perfilriesgo(user_id: int):
 #---Económico-------------------------------
 
 @app.get("/select_convfomentoemprend/{user_id}/{tema}", tags=["Económico"])
-async def select_perfilriesgo(user_id: int, tema:str):
+async def select_convfomentoemprend(user_id: int, tema:str):
     rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est",None,[user_id,tema])
     return jsonable_encoder(rows)
 
