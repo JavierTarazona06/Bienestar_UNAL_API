@@ -240,8 +240,16 @@ async def select_conv_gestion_economica_menor(user_id: int, filter:float):
 
 #----------------------------------------------------------------------------------------------------------
 
+@app.get("/conv_gestion_transporte/{user_id}/{tipo}", tags=["Económico"])
+async def select_conv_gestion_transporte(user_id: int, tipo:str):
+    rows = call_procedure("sp_convocatoriagestiontransporte_est",user_id,tipo)
+    return jsonable_encoder(rows)
 
 
+@app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
+async def select_conv_gestion_transporte_todo(user_id: int):
+    rows = call_procedure("sp_convocatoriagestiontransporte",user_id)
+    return jsonable_encoder(rows)
 
 
 def call_procedure(procedure: str, *args: Any) -> list[dict]:
