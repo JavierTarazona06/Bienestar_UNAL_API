@@ -155,7 +155,7 @@ async def select_pbm_estudiante(user_id: int):
     rows = call_procedure("pbm_est", user_id)
     return jsonable_encoder(rows)
 
-# Convocatorias
+# Convocatorias --------------------------------------------------------------------------------------------------
 
 
 @app.get("/conv_fomento_emprendimiento/{user_id}/{tema}", tags=["Económico"])
@@ -250,6 +250,27 @@ async def select_conv_gestion_transporte(user_id: int, tipo:str):
 async def select_conv_gestion_transporte_todo(user_id: int):
     rows = call_procedure("sp_convocatoriagestiontransporte",user_id)
     return jsonable_encoder(rows)
+
+
+@app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
+async def select_conv_gestion_transporte(user_id: int, tipo: str | None):
+    if tipo is None:
+        rows = call_procedure("sp_convocatoriagestiontransporte",user_id)
+    else:
+        rows = call_procedure("sp_convocatoriagestiontransporte_est",user_id,tipo)
+    return jsonable_encoder(rows)
+
+
+# Tienda Bienestar UN-------------------------------------------------------------------------------------
+
+
+@app.get("/info_factura/{user_id}", tags=["Económico"])
+async def select_info_factura_tienda(user_id: int, tienda_id:int):
+    rows = call_procedure("sp_info_factura_per",user_id, tienda_id)
+    return jsonable_encoder(rows)
+
+
+
 
 
 def call_procedure(procedure: str, *args: Any) -> list[dict]:
