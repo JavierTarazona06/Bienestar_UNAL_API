@@ -132,10 +132,9 @@ async def select_perfilriesgo(user_id: int):
 
 # ---------------------------------------------- ECONOMICO -------------------------------------------------------
 
-
 @app.get("/falla_alimentacion/{user_id}", tags=["Económico"])
 async def select_falla_alimentacion(user_id: int):
-    rows = call_procedure("sp_fallaalimentacion_est",["fallAlID", "fallAlcgaComida", "fallAlLugar", "fallAlFecha"],[user_id])
+    rows = call_procedure("sp_fallaalimentacion_est", user_id)
     return jsonable_encoder(rows)
 
 
@@ -150,86 +149,92 @@ async def select_horas_corresponsabilidad(user_id: int):
     rows = call_procedure("horas_corresponsabilidad_est", user_id)
     return jsonable_encoder(rows)
 
+
 @app.get("/pbm_estudiante/{user_id}", tags=["Económico"])
 async def select_pbm_estudiante(user_id: int):
-    rows = call_procedure("pbm_est",[user_id])
+    rows = call_procedure("pbm_est", user_id)
     return jsonable_encoder(rows)
 
-    #Convocatorias
+# Convocatorias
+
 
 @app.get("/conv_fomento_emprendimiento/{user_id}/{tema}", tags=["Económico"])
-async def select_conv_fomento_emprendimiento(user_id: int, tema:str):
-    rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est",[user_id,tema])
+async def select_conv_fomento_emprendimiento(user_id: int, tema: str):
+    rows = call_procedure("sp_convocatoriafomentoemprendimeinto_est", user_id, tema)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_fomento_emprendimiento/{user_id}/{nombre}", tags=["Económico"])
-async def select_conv_fomento_emprendimiento_nombre(user_id: int, nombre:str):
-    rows = call_procedure("sp_convocatoriafomentoemprendimiento_nombre",[user_id,nombre])
+async def select_conv_fomento_emprendimiento_nombre(user_id: int, nombre: str):
+    rows = call_procedure("sp_convocatoriafomentoemprendimiento_nombre", user_id, nombre)
     return jsonable_encoder(rows)
+
 
 @app.get("/conv_fomento_emprendimiento/{user_id}", tags=["Económico"])
 async def select_conv_fomento_emprendimiento_todo(user_id: int):
-    rows = call_procedure("sp_convocatoriafomentoemprendimiento",[user_id])
+    rows = call_procedure("sp_convocatoriafomentoemprendimiento", user_id)
     return jsonable_encoder(rows)
-
+  
+  
     #----------------------------------------------------------------------------------------------------------
-
+    
 @app.get("/conv_gestion_alimentaria/{user_id}/{comida}/{lugar}", tags=["Económico"])
-async def select_conv_gestion_alimentaria(user_id: int, comida:str, lugar:str):
-    rows = call_procedure("sp_convocatoriagestionalimentaria_est",[user_id,comida,lugar])
+async def select_conv_gestion_alimentaria(user_id: int, comida: str, lugar: str):
+    rows = call_procedure("sp_convocatoriagestionalimentaria_est", user_id, comida, lugar)
     return jsonable_encoder(rows)
-
-
+    
+    
 @app.get("/conv_gestion_alimentaria/{user_id}/{comida}", tags=["Económico"])
 async def select_conv_gestion_alimentaria_com(user_id: int, comida:str):
-    rows = call_procedure("sp_convocatoriagestionalimentaria_com",[user_id,comida])
+    rows = call_procedure("sp_convocatoriagestionalimentaria_com",user_id, comida)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_gestion_alimentaria/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alimentaria_todo(user_id: int):
-    rows = call_procedure("sp_convocatoriagestionalimentaria",[user_id])
-    return jsonable_encoder(rows)
+    rows = call_procedure("sp_convocatoriagestionalimentaria", user_id)  
+    return jsonable_encoder(rows)  
+  
 
-    
     #----------------------------------------------------------------------------------------------------------
+
 
 @app.get("/conv_gestion_alojamiento/{user_id}/{localidad}/{tipo}", tags=["Económico"])
 async def select_conv_gestion_alojamiento(user_id: int, localidad:str, tipo:str):
-    rows = call_procedure("sp_convocatoriagestionalojamiento_est",[user_id,localidad,tipo])
+    rows = call_procedure("sp_convocatoriagestionalojamiento_est",user_id,localidad,tipo)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_gestion_alojamiento/{user_id}/{localidad}", tags=["Económico"])
 async def select_conv_gestion_alojamiento_loc(user_id: int, localidad:str):
-    rows = call_procedure("sp_convocatoriagestionalojamiento_loc",[user_id,localidad])
+    rows = call_procedure("sp_convocatoriagestionalojamiento_loc",user_id,localidad)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_gestion_alojamiento/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alojamiento_todo(user_id: int):
-    rows = call_procedure("sp_convocatoriagestionalojamiento",[user_id])
+    rows = call_procedure("sp_convocatoriagestionalojamiento",user_id)
     return jsonable_encoder(rows)
 
 
 #----------------------------------------------------------------------------------------------------------
 
+
 @app.get("/conv_gestion_economica/{user_id}", tags=["Económico"])
 async def select_conv_gestion_economica(user_id: int):
-    rows = call_procedure("sp_convocatoriagestioneconomica_est",[user_id])
+    rows = call_procedure("sp_convocatoriagestioneconomica_est",user_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_gestion_economica/{user_id}/mayor_igual/{filter}", tags=["Económico"])
-async def select_conv_gestion_economica_mayor(user_id: int, filter:float):
-    rows = call_procedure("sp_convocatoriagestioneconomica_mayor",[user_id,filter])
+async def select_conv_gestion_economica_mayor(user_id: int, filter: float):
+    rows = call_procedure("sp_convocatoriagestioneconomica_mayor",user_id,filter)
     return jsonable_encoder(rows)
 
 
 @app.get("/conv_gestion_economica/{user_id}/menor/{filter}", tags=["Económico"])
 async def select_conv_gestion_economica_menor(user_id: int, filter:float):
-    rows = call_procedure("sp_convocatoriagestioneconomica_menor",[user_id,filter])
+    rows = call_procedure("sp_convocatoriagestioneconomica_menor",user_id,filter)
     return jsonable_encoder(rows)
 
 
@@ -248,10 +253,7 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     """
     cursor = connection.cursor()
     try:
-        if args is None:
-            cursor.callproc(procedure)
-        else:
-            cursor.callproc(procedure, args)
+        cursor.callproc(procedure, list(args))
     except errors.ProgrammingError as e:
         return [{'Key': 0, 'Answer': e}]
     except errors.DatabaseError as e:
