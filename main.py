@@ -229,11 +229,7 @@ async def select_conv_fomento_emprendimiento_todo(user_id: int):
     return jsonable_encoder(rows)
   
   
-<<<<<<< Updated upstream
 # ----------------------------------------------------------------------------------------------------------
-    
-=======
-    #----------------------------------------------------------------------------------------------------------
 
 @app.get("/conv_gestion_alimentaria/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str|None, lugar: str|None):
@@ -241,8 +237,7 @@ async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str|None,
     return jsonable_encoder(rows)
 
 
-'''   
->>>>>>> Stashed changes
+'''
 @app.get("/conv_gestion_alimentaria/{user_id}/{comida}/{lugar}", tags=["Económico"])
 async def select_conv_gestion_alimentaria(user_id: int, comida: str, lugar: str):
     rows = call_procedure("sp_convocatoriagestionalimentaria_est", user_id, comida, lugar)
@@ -295,24 +290,21 @@ async def select_conv_gestion_economica_filtro(user_id: int, filter_min:float|No
     rows = call_procedure("sp_convocatoriagestioneconomica_filtro",user_id,filter_min, filter_max)
     return jsonable_encoder(rows)
 
+
 '''
 @app.get("/conv_gestion_economica/{user_id}", tags=["Económico"])
 async def select_conv_gestion_economica(user_id: int):
     rows = call_procedure("sp_convocatoriagestioneconomica_est", user_id)
     return jsonable_encoder(rows)
 
-<<<<<<< Updated upstream
-
 @app.get("/conv_gestion_economica/{user_id}/mayor_igual/{filtro}", tags=["Económico"])
 async def select_conv_gestion_economica_mayor(user_id: int, filtro: float):
     rows = call_procedure("sp_convocatoriagestioneconomica_mayor", user_id, filtro)
-=======
+
 @app.get("/conv_gestion_economica/{user_id}/mayor_igual/{filter}", tags=["Económico"])
 async def select_conv_gestion_economica_mayor(user_id: int, filter: float):
     rows = call_procedure("sp_convocatoriagestioneconomica_mayor",user_id,filter)
->>>>>>> Stashed changes
     return jsonable_encoder(rows)
-
 
 @app.get("/conv_gestion_economica/{user_id}/menor/{filtro}", tags=["Económico"])
 async def select_conv_gestion_economica_menor(user_id: int, filtro: float):
@@ -320,13 +312,16 @@ async def select_conv_gestion_economica_menor(user_id: int, filtro: float):
     return jsonable_encoder(rows)
 '''
 
-<<<<<<< Updated upstream
 # ----------------------------------------------------------------------------------------------------------
 
-=======
-#----------------------------------------------------------------------------------------------------------
+
+@app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
+async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str | None):
+    rows = call_procedure("sp_convocatoriagestiontransporte_filtro",user_id, tipo)
+    return jsonable_encoder(rows)
+
+
 '''
->>>>>>> Stashed changes
 @app.get("/conv_gestion_transporte/{user_id}/{tipo}", tags=["Económico"])
 async def select_conv_gestion_transporte(user_id: int, tipo: str):
     rows = call_procedure("sp_convocatoriagestiontransporte_est", user_id, tipo)
@@ -338,16 +333,6 @@ async def select_conv_gestion_transporte_todo(user_id: int):
     rows = call_procedure("sp_convocatoriagestiontransporte", user_id)
     return jsonable_encoder(rows)
 '''
-
-<<<<<<< Updated upstream
-=======
-@app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
-async def select_conv_gestion_transporte(user_id: int, tipo: str | None):
-    if tipo is None:
-        rows = call_procedure("sp_convocatoriagestiontransporte",user_id)
-    else:
-        rows = call_procedure("sp_convocatoriagestiontransporte_est",user_id,tipo)
-    return jsonable_encoder(rows)
 
 
 # Tienda Bienestar UN-------------------------------------------------------------------------------------
@@ -365,7 +350,6 @@ async def select_productos_tienda(tienda_id:int | None):
 
 
 
->>>>>>> Stashed changes
 def call_procedure(procedure: str, *args: Any) -> list[dict]:
     """
     Returns a list with all the rows given a procedure and arguments
