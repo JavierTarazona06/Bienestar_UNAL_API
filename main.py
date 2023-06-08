@@ -199,13 +199,13 @@ async def select_actividad_corresponsabilidad(user_id: int):
 
 @app.get("/horas_corresponsabilidad/{user_id}", tags=["Económico"])
 async def select_horas_corresponsabilidad(user_id: int):
-    rows = call_function("horas_corresponsabilidad_est", user_id)
+    rows = call_procedure("sp_horas_corresponsabilidad_est", user_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/pbm_estudiante/{user_id}", tags=["Económico"])
 async def select_pbm_estudiante(user_id: int):
-    rows = call_function("pbm_est", user_id)
+    rows = call_procedure("sp_pbm_est", user_id)
     return jsonable_encoder(rows)
 
 # Convocatorias
@@ -283,39 +283,6 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     cursor = connection.cursor()
     try:
         cursor.callproc(procedure, list(args))
-    except errors.ProgrammingError as e:
-        return [{'Key': 0, 'Answer': e}]
-    except errors.DatabaseError as e:
-        return [{'Key': 0, 'Answer': e}]
-
-    column_names, rows = [], []
-    for answer in cursor.stored_results():
-        column_names.extend(answer.column_names)
-        rows.extend(answer.fetchall())
-
-    result = []
-    if len(rows) != 0:
-        for key, row in enumerate(rows):
-            data = {'Key': key}
-            for i, value in enumerate(row):
-                data[column_names[i]] = value
-            result.append(data)
-    
-    cursor.close()
-    connection.commit()
-
-    return result
-
-def call_function(function: str, *args: Any) -> list[dict]:
-    """
-    Returns a list with all the rows given a function and arguments
-
-    :param function: function to call
-    :param args: arguments for the function
-    """
-    cursor = connection.cursor()
-    try:
-        cursor.execute(function, list(args))
     except errors.ProgrammingError as e:
         return [{'Key': 0, 'Answer': e}]
     except errors.DatabaseError as e:
