@@ -44,6 +44,22 @@ while True:
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
+
+# ------------------------------------------------ GENERAL ---------------------------------------------------------
+
+
+@app.post("/est_toma_conv", tags=["General"])
+async def estudiante_toma_convocatoria(est_id:int | None, conv_id: int, fecha: str):
+    rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+@app.get("/programa_area_convocatoria", tags=["General"])
+async def select_programa_y_area_de_convocatoria(id_conv:int):
+    rows = call_procedure('programa_area_convocatoria',id_conv)
+    return jsonable_encoder(rows)
+
 # ------------------------------------------------ SALUD ---------------------------------------------------------
 
 
@@ -249,27 +265,30 @@ async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
 # Tienda Bienestar UN-------------------------------------------------------------------------------------
 
 
-@app.get("/info_factura/{user_id}", tags=["Económico"])
+@app.get("/info_factura/{user_id}", tags=["Económico-Tienda"])
 async def select_info_factura_tienda(user_id: int, tienda_id:int=None):
     rows = call_procedure("sp_info_factura_per",user_id, tienda_id)
     return jsonable_encoder(rows)
 
-@app.get("/productos_tienda", tags=["Económico"])
-async def select_productos_tienda(tienda_id:int | None):
+@app.get("/productos_tienda", tags=["Económico-Tienda"])
+async def select_productos_tienda(tienda_id:int = None):
     rows = call_procedure("sp_productos_tienda", tienda_id)
     return jsonable_encoder(rows)
 
 
-@app.get("/tiendas_producto", tags=["Económico"])
+@app.get("/tiendas_producto", tags=["Económico-Tienda"])
 async def select_tiendas_producto(producto_id:int | None):
     rows = call_procedure("sp_tiendas_ofrece_producto", producto_id)
     return jsonable_encoder(rows)
 
-@app.post("/est_toma_conv", tags=["Económico"])
-async def estudiante_toma_convocatoria(est_id:int | None, conv_id: int, fecha: str):
-    rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
+
+@app.post("/insertar_factura", tags=["Económico-Tienda"])
+async def insertar_factura(clieID:int | None, detalle:str="N.A", tieID:int=1):
+    fact_ID = 0
+    rows = call_procedure("insertar_factura", detalle, tieID, clieID, fact_ID)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        #return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return f"{fact_ID}"
     return jsonable_encoder(rows)
 
 
