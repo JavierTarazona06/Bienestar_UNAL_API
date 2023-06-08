@@ -260,6 +260,18 @@ async def select_productos_tienda(tienda_id:int | None):
     return jsonable_encoder(rows)
 
 
+@app.get("/tiendas_producto", tags=["Económico"])
+async def select_tiendas_producto(producto_id:int | None):
+    rows = call_procedure("sp_tiendas_ofrece_producto", producto_id)
+    return jsonable_encoder(rows)
+
+@app.post("/est_toma_conv", tags=["Económico"])
+async def estudiante_toma_convocatoria(est_id:int | None, conv_id: int, fecha: str):
+    rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
 
 def call_procedure(procedure: str, *args: Any) -> list[dict]:
     """
