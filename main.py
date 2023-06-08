@@ -158,7 +158,7 @@ async def select_proyecto(id_proy: int):
 
 
 @app.post("/participar_convocatoria", tags=["Deporte"])
-async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetime):
+async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetime.datetime):
     rows = call_procedure('pas_participar_convocatoria', cedula, id_conv, fecha_inscripcion)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
