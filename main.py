@@ -8,6 +8,7 @@ from mysql.connector import errors
 from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 
 url = URL.create(
     drivername=os.environ["DRIVER"],
@@ -28,8 +29,17 @@ async def lifespan(app: FastAPI):
     # Close the connection with the database
     connection.close()
 
+origins = ["*"]
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 while True:
     try:
