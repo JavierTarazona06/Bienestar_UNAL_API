@@ -213,6 +213,14 @@ async def select_actividad_corresponsabilidad(user_id: int):
     return jsonable_encoder(rows)
 
 
+@app.post("/insertar_actividad_corresponsabilidad/{user_id}", tags=["Económico"])
+async def insertar_actividad_corresponsabilidad(user_id: int, actividad:str, horas:int):
+    rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
 @app.get("/horas_corresponsabilidad/{user_id}", tags=["Económico"])
 async def select_horas_corresponsabilidad(user_id: int):
     rows = call_procedure("sp_horas_corresponsabilidad_est", user_id)
