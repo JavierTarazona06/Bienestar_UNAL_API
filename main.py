@@ -206,7 +206,7 @@ async def select_all_deportes(id_programa: int):
 
 @app.get("/convocatorias_deporte", tags=["Deporte"])
 async def select_conv_deportes(id_programa: int):
-    rows = call_procedure('sp_consultar_convocatorias_deporte', id_programa)
+    rows = call_procedure('sp_consultar_convocatorias_programa', id_programa)
     return jsonable_encoder(rows)
 
 # ---------------------------------------------- ECONOMICO -------------------------------------------------------
