@@ -299,6 +299,14 @@ async def insertar_producto_en_factura(factura_ID:int | None, producto_ID:int | 
     return jsonable_encoder(rows)
 
 
+@app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
+async def eliminar_factura(user_id:int|None, mes:int=None, ano:int=None):
+    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
 def call_procedure(procedure: str, *args: Any) -> list[dict]:
     """
     Returns a list with all the rows given a procedure and arguments
