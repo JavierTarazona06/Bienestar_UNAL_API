@@ -225,7 +225,7 @@ async def select_actividad_corresponsabilidad(user_id: int):
 
 
 @app.post("/insertar_actividad_corresponsabilidad/{user_id}", tags=["Económico"])
-async def insertar_actividad_corresponsabilidad(user_id: int, actividad:str, horas:int):
+async def insertar_actividad_corresponsabilidad(user_id: int, actividad: str, horas: int):
     rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
@@ -323,7 +323,7 @@ async def insertar_producto_en_factura(factura_ID: int | None, producto_ID: int 
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id:int|None, mes:int=None, ano:int=None):
+async def eliminar_factura(user_id:int|None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
