@@ -58,7 +58,7 @@ async def root():
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
 
 
-@app.post("/est_toma_conv", tags=["General"])
+@app.post("/est_toma_conv/{est_id}", tags=["General"])
 async def estudiante_toma_convocatoria(est_id: int | None, conv_id: int, fecha: str):
     rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
     if len(rows) == 0:
