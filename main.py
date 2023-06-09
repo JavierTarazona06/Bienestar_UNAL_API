@@ -8,6 +8,7 @@ from mysql.connector import errors
 from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
 
 url = URL.create(
     drivername=os.environ["DRIVER"],
@@ -28,8 +29,17 @@ async def lifespan(app: FastAPI):
     # Close the connection with the database
     connection.close()
 
-
 app = FastAPI(lifespan=lifespan)
+
+# CORS configuration
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 while True:
     try:
@@ -49,15 +59,16 @@ async def root():
 
 
 @app.post("/est_toma_conv", tags=["General"])
-async def estudiante_toma_convocatoria(est_id:int | None, conv_id: int, fecha: str):
+async def estudiante_toma_convocatoria(est_id: int | None, conv_id: int, fecha: str):
     rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
+
 @app.get("/programa_area_convocatoria", tags=["General"])
-async def select_programa_y_area_de_convocatoria(id_conv:int):
-    rows = call_procedure('programa_area_convocatoria',id_conv)
+async def select_programa_y_area_de_convocatoria(id_conv: int):
+    rows = call_procedure('programa_area_convocatoria', id_conv)
     return jsonable_encoder(rows)
 
 # ------------------------------------------------ SALUD ---------------------------------------------------------
@@ -133,7 +144,7 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
     return jsonable_encoder(rows)
 
 
-@app.put("/modificar_atencionsalud/{user_id}", tags=["Salud"])
+@app.put("/modificar_atencionsalud/", tags=["Salud"])
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
     if len(rows) == 0:
@@ -214,7 +225,7 @@ async def select_actividad_corresponsabilidad(user_id: int):
 
 
 @app.post("/insertar_actividad_corresponsabilidad/{user_id}", tags=["Económico"])
-async def insertar_actividad_corresponsabilidad(user_id: int, actividad:str, horas:int):
+async def insertar_actividad_corresponsabilidad(user_id: int, actividad: str, horas: int):
     rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
@@ -234,15 +245,17 @@ async def select_pbm_estudiante(user_id: int):
 
 # Convocatorias
 
+
 @app.get("/conv_fomento_emprendimiento/{user_id}", tags=["Económico"])
-async def select_conv_fomento_emprendimiento_filtro(user_id: int, nombre: str=None, tema: str=None):
+async def select_conv_fomento_emprendimiento_filtro(user_id: int, nombre: str = None, tema: str = None):
     rows = call_procedure("sp_convocatoriafomentoemprendimiento_filtro", nombre, tema)
     return jsonable_encoder(rows)
   
 # ----------------------------------------------------------------------------------------------------------
 
+
 @app.get("/conv_gestion_alimentaria/{user_id}", tags=["Económico"])
-async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str=None, lugar: str=None):
+async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str = None, lugar: str = None):
     rows = call_procedure("sp_convocatoriagestionalimentaria_filtro", user_id, comida, lugar)
     return jsonable_encoder(rows)
   
@@ -250,15 +263,16 @@ async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str=None,
 # ----------------------------------------------------------------------------------------------------------
 
 @app.get("/conv_gestion_alojamiento/{user_id}", tags=["Económico"])
-async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad:str=None, tipo:str=None):
-    rows = call_procedure("sp_convocatoriagestionalojamiento_filtro",user_id,localidad,tipo)
+async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad: str = None, tipo: str = None):
+    rows = call_procedure("sp_convocatoriagestionalojamiento_filtro", user_id, localidad, tipo)
     return jsonable_encoder(rows)
 
 # ----------------------------------------------------------------------------------------------------------
 
+
 @app.get("/conv_gestion_economica/{user_id}", tags=["Económico"])
-async def select_conv_gestion_economica_filtro(user_id: int, filter_min:float=None, filter_max:float=None):
-    rows = call_procedure("sp_convocatoriagestioneconomica_filtro",user_id,filter_min, filter_max)
+async def select_conv_gestion_economica_filtro(user_id: int, filter_min: float = None, filter_max: float = None):
+    rows = call_procedure("sp_convocatoriagestioneconomica_filtro", user_id, filter_min, filter_max)
     return jsonable_encoder(rows)
 
 # ----------------------------------------------------------------------------------------------------------
@@ -266,7 +280,7 @@ async def select_conv_gestion_economica_filtro(user_id: int, filter_min:float=No
 
 @app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
 async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
-    rows = call_procedure("sp_convocatoriagestiontransporte_filtro",user_id, tipo)
+    rows = call_procedure("sp_convocatoriagestiontransporte_filtro", user_id, tipo)
     return jsonable_encoder(rows)
 
 
@@ -274,24 +288,25 @@ async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
 
 
 @app.get("/info_factura/{user_id}", tags=["Económico-Tienda"])
-async def select_info_factura_tienda(user_id: int, tienda_id:int=None, factura_id:int=None):
-    rows = call_procedure("sp_info_factura_per",user_id, tienda_id, factura_id)
+async def select_info_factura_tienda(user_id: int, tienda_id: int = None, factura_id: int = None):
+    rows = call_procedure("sp_info_factura_per", user_id, tienda_id, factura_id)
     return jsonable_encoder(rows)
 
+
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
-async def select_productos_tienda(tienda_id:int = None):
+async def select_productos_tienda(tienda_id: int = None):
     rows = call_procedure("sp_productos_tienda", tienda_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/tiendas_producto", tags=["Económico-Tienda"])
-async def select_tiendas_producto(producto_id:int | None):
+async def select_tiendas_producto(producto_id: int | None):
     rows = call_procedure("sp_tiendas_ofrece_producto", producto_id)
     return jsonable_encoder(rows)
 
 
 @app.post("/insertar_factura", tags=["Económico-Tienda"])
-async def insertar_factura(cliente_ID:int | None, detalle:str="N.A", tienda_ID:int=1):
+async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_ID: int = 1):
     fact_ID = 0
     rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
     if len(rows) == 0:
@@ -308,7 +323,7 @@ async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, produ
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id:int|None, mes:int=None, ano:int=None):
+async def eliminar_factura(user_id:int|None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
