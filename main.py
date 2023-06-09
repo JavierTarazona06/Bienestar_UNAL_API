@@ -240,7 +240,7 @@ async def select_pbm_estudiante(user_id: int):
 
 @app.get("/conv_fomento_emprendimiento/{user_id}", tags=["Económico"])
 async def select_conv_fomento_emprendimiento_filtro(user_id: int, nombre: str = None, tema: str = None):
-    rows = call_procedure("sp_convocatoriafomentoemprendimiento_filtro", user_id, nombre, tema)
+    rows = call_procedure("sp_convocatoriafomentoemprendimiento_filtro", nombre, tema)
     return jsonable_encoder(rows)
   
 # ----------------------------------------------------------------------------------------------------------
