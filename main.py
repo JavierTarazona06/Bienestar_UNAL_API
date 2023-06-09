@@ -206,7 +206,7 @@ async def select_all_deportes(id_programa: int):
 
 @app.get("/convocatorias_deporte", tags=["Deporte"])
 async def select_conv_deportes(id_programa: int):
-    rows = call_procedure('sp_consultar_convocatorias_deporte', id_programa)
+    rows = call_procedure('sp_consultar_convocatorias_programa', id_programa)
     return jsonable_encoder(rows)
 
 # ---------------------------------------------- ECONOMICO -------------------------------------------------------
@@ -221,6 +221,14 @@ async def select_falla_alimentacion(user_id: int):
 @app.get("/actividad_corresponsabilidad/{user_id}", tags=["Económico"])
 async def select_actividad_corresponsabilidad(user_id: int):
     rows = call_procedure("sp_actividadcorresp_est", user_id)
+    return jsonable_encoder(rows)
+
+
+@app.post("/insertar_actividad_corresponsabilidad/{user_id}", tags=["Económico"])
+async def insertar_actividad_corresponsabilidad(user_id: int, actividad:str, horas:int):
+    rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
@@ -309,6 +317,14 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
 @app.post("/insertar_producto_factura", tags=["Económico-Tienda"])
 async def insertar_producto_en_factura(factura_ID: int | None, producto_ID: int | None):
     rows = call_procedure("sp_insertar_prod_factura", factura_ID, producto_ID)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
+@app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
+async def eliminar_factura(user_id:int|None, mes:int=None, ano:int=None):
+    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
