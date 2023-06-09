@@ -144,7 +144,7 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
     return jsonable_encoder(rows)
 
 
-@app.put("/modificar_atencionsalud/{user_id}", tags=["Salud"])
+@app.put("/modificar_atencionsalud/", tags=["Salud"])
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
     if len(rows) == 0:
