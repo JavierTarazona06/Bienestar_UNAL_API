@@ -266,8 +266,8 @@ async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
 
 
 @app.get("/info_factura/{user_id}", tags=["Económico-Tienda"])
-async def select_info_factura_tienda(user_id: int, tienda_id:int=None):
-    rows = call_procedure("sp_info_factura_per",user_id, tienda_id)
+async def select_info_factura_tienda(user_id: int, tienda_id:int=None, factura_id:int=None):
+    rows = call_procedure("sp_info_factura_per",user_id, tienda_id, factura_id)
     return jsonable_encoder(rows)
 
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
@@ -283,12 +283,19 @@ async def select_tiendas_producto(producto_id:int | None):
 
 
 @app.post("/insertar_factura", tags=["Económico-Tienda"])
-async def insertar_factura(clieID:int | None, detalle:str="N.A", tieID:int=1):
+async def insertar_factura(cliente_ID:int | None, detalle:str="N.A", tienda_ID:int=1):
     fact_ID = 0
-    rows = call_procedure("insertar_factura", detalle, tieID, clieID, fact_ID)
+    rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
     if len(rows) == 0:
-        #return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
-        return f"{fact_ID}"
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
+@app.post("/insertar_producto_factura", tags=["Económico-Tienda"])
+async def insertar_producto_en_factura(factura_ID:int | None, producto_ID:int | None):
+    rows = call_procedure("sp_insertar_prod_factura", factura_ID, producto_ID)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
 
 
