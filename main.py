@@ -58,7 +58,7 @@ async def root():
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
 
 
-@app.post("/est_toma_conv", tags=["General"])
+@app.post("/est_toma_conv/{est_id}", tags=["General"])
 async def estudiante_toma_convocatoria(est_id: int | None, conv_id: int, fecha: str):
     rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
     if len(rows) == 0:
@@ -262,8 +262,8 @@ async def select_pbm_estudiante(user_id: int):
 # Convocatorias
 
 
-@app.get("/conv_fomento_emprendimiento/{user_id}", tags=["Económico"])
-async def select_conv_fomento_emprendimiento_filtro(user_id: int, nombre: str = None, tema: str = None):
+@app.get("/conv_fomento_emprendimiento", tags=["Económico"])
+async def select_conv_fomento_emprendimiento_filtro(nombre: str = None, tema: str = None):
     rows = call_procedure("sp_convocatoriafomentoemprendimiento_filtro", nombre, tema)
     return jsonable_encoder(rows)
   
@@ -330,9 +330,9 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
     return jsonable_encoder(rows)
 
 
-@app.post("/insertar_producto_factura", tags=["Económico-Tienda"])
-async def insertar_producto_en_factura(factura_ID: int | None, producto_ID: int | None):
-    rows = call_procedure("sp_insertar_prod_factura", factura_ID, producto_ID)
+@app.post("/insertar_producto_factura/{user_id}", tags=["Económico-Tienda"])
+async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, producto_ID:int | None):
+    rows = call_procedure("sp_insertar_prod_factura_per", user_id, factura_ID, producto_ID)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
