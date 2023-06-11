@@ -130,6 +130,14 @@ async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enferm
     return jsonable_encoder(rows)
 
 
+@app.delete("/eliminar_incapacidad/", tags=["Salud"])
+async def remove_atencionsalud(incapacidad_id: int):
+    rows = call_procedure('pas_remove_incapacidad', incapacidad_id)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
 @app.get("/atencionessalud/{user_id}", tags=["Salud"])
 async def select_atencionsalud(user_id: int):
     rows = call_procedure('pas_view_atencionsalud', user_id)
@@ -147,6 +155,14 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
 @app.put("/modificar_atencionsalud/", tags=["Salud"])
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
+@app.delete("/eliminar_atencionsalud/", tags=["Salud"])
+async def remove_atencionsalud(atencionsalud_id: int):
+    rows = call_procedure('pas_remove_atencionsalud', atencionsalud_id)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
