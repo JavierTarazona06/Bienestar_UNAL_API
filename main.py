@@ -131,7 +131,7 @@ async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enferm
 
 
 @app.delete("/eliminar_incapacidad/", tags=["Salud"])
-async def remove_atencionsalud(incapacidad_id: int):
+async def remove_incapacidad(incapacidad_id: int):
     rows = call_procedure('pas_remove_incapacidad', incapacidad_id)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
