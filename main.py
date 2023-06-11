@@ -331,7 +331,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
 
 
 @app.post("/insertar_producto_factura/{user_id}", tags=["Económico-Tienda"])
-async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, producto_ID:int | None):
+async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, producto_ID: int | None):
     rows = call_procedure("sp_insertar_prod_factura_per", user_id, factura_ID, producto_ID)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
@@ -339,7 +339,7 @@ async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, produ
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id:int|None, mes: int = None, ano: int = None):
+async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
