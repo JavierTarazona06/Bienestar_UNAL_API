@@ -1,6 +1,6 @@
+import datetime
 import os
 import time
-import datetime
 from typing import Any
 from fastapi import FastAPI
 from sqlalchemy.engine import URL
@@ -9,17 +9,9 @@ from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.pool.base import PoolProxiedConnection
 
-url = URL.create(
-    drivername=os.environ["DRIVER"],
-    username=os.environ["NAME_USER"],
-    password=os.environ["PASSWORD"],
-    host=os.environ["HOST_NAME"],
-    database=os.environ["DATABASE"],
-    port=int(os.environ["PORT"])
-)
-
-engine = create_engine(url)
+connection = None
 
 
 @asynccontextmanager
@@ -27,7 +19,8 @@ async def lifespan(app: FastAPI):
     pass
     yield
     # Close the connection with the database
-    connection.close()
+    if isinstance(connection, PoolProxiedConnection):
+        connection.close()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -41,18 +34,50 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-while True:
-    try:
-        connection = engine.raw_connection()
-        break
-    except errors.DatabaseError as error:
-        print(error)
-        time.sleep(5)
-
 
 @app.get("/")
 async def root():
     return jsonable_encoder('MAIN PAGE')
+
+# ------------------------------------------------ INICIO DE SESIÓN ---------------------------------------------------------
+
+@app.get("/inicia_sesion", tags=["Log In"])
+async def select_programa_y_area_de_convocatoria(id_conv: int):
+    rows = call_procedure('programa_area_convocatoria', id_conv)
+    return jsonable_encoder(rows)
+
+@app.get("/login")
+async def root(user: str, password: str) -> list[dict]:
+    global connection
+
+    url = URL.create(
+        drivername=os.environ["DRIVER"],
+        username=user,
+        password=password,
+        host=os.environ["HOST_NAME"],
+        database=os.environ["DATABASE"],
+        port=int(os.environ["PORT"])
+    )
+
+    engine = create_engine(url)
+
+    tries = 0
+    while True:
+        try:
+            connection = engine.raw_connection()
+            message = 'Done'
+            break
+        except errors.DatabaseError as error:
+            print(error)
+            message = 'Wrong username or password'
+
+            if tries == 3:
+                break
+
+            time.sleep(5)
+            tries += 1
+
+    return jsonable_encoder([{'Key': 0, 'Answer': message}])
 
 
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
@@ -62,7 +87,7 @@ async def root():
 async def estudiante_toma_convocatoria(est_id: int | None, conv_id: int, fecha: str):
     rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -90,7 +115,7 @@ async def select_citamedicas_user(user_id: str):
 async def delete_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
     rows = call_procedure('pas_delete_cita_medica', user_id, fecha, especialidad)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -98,7 +123,7 @@ async def delete_citamedica(user_id: int, fecha: datetime.datetime, especialidad
 async def add_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
     rows = call_procedure('pas_add_cita_medica', user_id, fecha, especialidad)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -118,7 +143,7 @@ async def select_incapacidad(user_id: int):
 async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
     rows = call_procedure('pas_add_incapacidad', user_id, fecha, enfermedad, dias)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -126,7 +151,7 @@ async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: st
 async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
     rows = call_procedure('pas_edit_incapacidad', incapacidad_id, fecha, enfermedad, dias)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -134,7 +159,7 @@ async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enferm
 async def remove_incapacidad(incapacidad_id: int):
     rows = call_procedure('pas_remove_incapacidad', incapacidad_id)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -148,7 +173,7 @@ async def select_atencionsalud(user_id: int):
 async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_add_atencionsalud', user_id, fecha, tipo)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -156,7 +181,7 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -164,7 +189,7 @@ async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, ti
 async def remove_atencionsalud(atencionsalud_id: int):
     rows = call_procedure('pas_remove_atencionsalud', atencionsalud_id)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -201,10 +226,10 @@ async def select_proyecto(id_proy: int):
 
 
 @app.post("/participar_convocatoria", tags=["Deporte"])
-async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetime.datetime):
+async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetime.date):
     rows = call_procedure('pas_participar_convocatoria', cedula, id_conv, fecha_inscripcion)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -244,7 +269,7 @@ async def select_actividad_corresponsabilidad(user_id: int):
 async def insertar_actividad_corresponsabilidad(user_id: int, actividad: str, horas: int):
     rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -305,12 +330,16 @@ async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
 
 @app.get("/info_factura/{user_id}", tags=["Económico-Tienda"])
 async def select_info_factura_tienda(user_id: int, tienda_id: int = None, factura_id: int = None):
+    if tienda_id == -1:
+        tienda_id = None
     rows = call_procedure("sp_info_factura_per", user_id, tienda_id, factura_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
 async def select_productos_tienda_nombre(tienda_id: int = None, nombre:str = None):
+    if tienda_id == -1:
+        tienda_id = None
     rows = call_procedure("sp_productos_tienda_nombre", tienda_id, nombre)
     return jsonable_encoder(rows)
 
@@ -326,7 +355,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
     fact_ID = 0
     rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -334,7 +363,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
 async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, producto_ID: int | None):
     rows = call_procedure("sp_insertar_prod_factura_per", user_id, factura_ID, producto_ID)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -342,7 +371,7 @@ async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, pro
 async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -374,28 +403,37 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     :param procedure: function to call
     :param args: arguments for the procedure
     """
+    if connection is None:
+        return [{'Key': 0, 'Answer': 'Not connected to the database'}]
+
+    # Call the stored procedure
     cursor = connection.cursor()
     try:
         cursor.callproc(procedure, list(args))
     except errors.ProgrammingError as e:
-        return [{'Key': 0, 'Answer': e}]
+        return [{'Key': 0, 'Answer': e.msg}]
     except errors.DatabaseError as e:
-        return [{'Key': 0, 'Answer': e}]
+        return [{'Key': 0, 'Answer': e.msg}]
 
+    # Fetch all the rows
     column_names, rows = [], []
     for answer in cursor.stored_results():
         column_names.extend(answer.column_names)
         rows.extend(answer.fetchall())
 
+    # Return the result in a json format
     result = []
     if len(rows) != 0:
         for key, row in enumerate(rows):
             data = {'Key': key}
             for i, value in enumerate(row):
-                header = str(column_names[i]).replace('@',"")
+                header = str(column_names[i]).replace('@', "")
+                if type(value) == datetime.timedelta:
+                    value = str(value)
                 data[header] = value
             result.append(data)
-    
+
+    # End cursor and connection
     cursor.close()
     connection.commit()
 
