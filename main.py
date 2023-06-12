@@ -9,17 +9,9 @@ from sqlalchemy import create_engine
 from contextlib import asynccontextmanager
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.pool.base import PoolProxiedConnection
 
-url = URL.create(
-    drivername=os.environ["DRIVER"],
-    username=os.environ["NAME_USER"],
-    password=os.environ["PASSWORD"],
-    host=os.environ["HOST_NAME"],
-    database=os.environ["DATABASE"],
-    port=int(os.environ["PORT"])
-)
-
-engine = create_engine(url)
+connection = None
 
 
 @asynccontextmanager
@@ -27,7 +19,8 @@ async def lifespan(app: FastAPI):
     pass
     yield
     # Close the connection with the database
-    connection.close()
+    if isinstance(connection, PoolProxiedConnection):
+        connection.close()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -41,18 +34,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-while True:
-    try:
-        connection = engine.raw_connection()
-        break
-    except errors.DatabaseError as error:
-        print(error)
-        time.sleep(5)
-
 
 @app.get("/")
 async def root():
     return jsonable_encoder('MAIN PAGE')
+
+
+@app.get("/login")
+async def root(user: str, password: str):
+    global connection
+
+    url = URL.create(
+        drivername=os.environ["DRIVER"],
+        username=user,
+        password=password,
+        host=os.environ["HOST_NAME"],
+        database=os.environ["DATABASE"],
+        port=int(os.environ["PORT"])
+    )
+
+    engine = create_engine(url)
+
+    tries = 0
+    while True:
+        try:
+            connection = engine.raw_connection()
+            message = 'Done'
+            break
+        except errors.DatabaseError as error:
+            print(error)
+            message = 'Wrong username or password'
+
+            if tries == 3:
+                break
+
+            time.sleep(5)
+            tries += 1
+
+    return jsonable_encoder({'Key': 0, 'Answer': message})
 
 
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
@@ -353,6 +372,9 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     :param procedure: function to call
     :param args: arguments for the procedure
     """
+    if connection is None:
+        return [{'Key': 0, 'Answer': 'Not connected to the database'}]
+
     cursor = connection.cursor()
     try:
         cursor.callproc(procedure, list(args))
