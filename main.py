@@ -304,6 +304,10 @@ async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str = Non
 
 @app.get("/conv_gestion_alojamiento/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad: str = None, tipo: str = None):
+    if localidad == '':
+        localidad = None
+    if tipo == '':
+        tipo = None
     rows = call_procedure("sp_convocatoriagestionalojamiento_filtro", user_id, localidad, tipo)
     return jsonable_encoder(rows)
 
@@ -320,6 +324,8 @@ async def select_conv_gestion_economica_filtro(user_id: int, filter_min: float =
 
 @app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
 async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
+    if tipo == '':
+        tipo = None
     rows = call_procedure("sp_convocatoriagestiontransporte_filtro", user_id, tipo)
     return jsonable_encoder(rows)
 
