@@ -294,8 +294,8 @@ async def select_info_factura_tienda(user_id: int, tienda_id: int = None, factur
 
 
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
-async def select_productos_tienda(tienda_id: int = None):
-    rows = call_procedure("sp_productos_tienda", tienda_id)
+async def select_productos_tienda_nombre(tienda_id: int = None, nombre:str = None):
+    rows = call_procedure("sp_productos_tienda_nombre", tienda_id, nombre)
     return jsonable_encoder(rows)
 
 
