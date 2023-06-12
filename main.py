@@ -41,7 +41,7 @@ async def root():
 
 
 @app.get("/login")
-async def root(user: str, password: str):
+async def root(user: str, password: str) -> list[dict]:
     global connection
 
     url = URL.create(
@@ -71,7 +71,7 @@ async def root(user: str, password: str):
             time.sleep(5)
             tries += 1
 
-    return jsonable_encoder({'Key': 0, 'Answer': message})
+    return jsonable_encoder([{'Key': 0, 'Answer': message}])
 
 
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
@@ -81,7 +81,7 @@ async def root(user: str, password: str):
 async def estudiante_toma_convocatoria(est_id: int | None, conv_id: int, fecha: str):
     rows = call_procedure("sp_insertar_est_tm_conv_est", est_id, conv_id, fecha)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -109,7 +109,7 @@ async def select_citamedicas_user(user_id: str):
 async def delete_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
     rows = call_procedure('pas_delete_cita_medica', user_id, fecha, especialidad)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -117,7 +117,7 @@ async def delete_citamedica(user_id: int, fecha: datetime.datetime, especialidad
 async def add_citamedica(user_id: int, fecha: datetime.datetime, especialidad: str):
     rows = call_procedure('pas_add_cita_medica', user_id, fecha, especialidad)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -137,7 +137,7 @@ async def select_incapacidad(user_id: int):
 async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
     rows = call_procedure('pas_add_incapacidad', user_id, fecha, enfermedad, dias)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -145,7 +145,7 @@ async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: st
 async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
     rows = call_procedure('pas_edit_incapacidad', incapacidad_id, fecha, enfermedad, dias)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -153,7 +153,7 @@ async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enferm
 async def remove_incapacidad(incapacidad_id: int):
     rows = call_procedure('pas_remove_incapacidad', incapacidad_id)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -167,7 +167,7 @@ async def select_atencionsalud(user_id: int):
 async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_add_atencionsalud', user_id, fecha, tipo)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -175,7 +175,7 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -183,7 +183,7 @@ async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, ti
 async def remove_atencionsalud(atencionsalud_id: int):
     rows = call_procedure('pas_remove_atencionsalud', atencionsalud_id)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -223,7 +223,7 @@ async def select_proyecto(id_proy: int):
 async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetime.datetime):
     rows = call_procedure('pas_participar_convocatoria', cedula, id_conv, fecha_inscripcion)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -263,7 +263,7 @@ async def select_actividad_corresponsabilidad(user_id: int):
 async def insertar_actividad_corresponsabilidad(user_id: int, actividad: str, horas: int):
     rows = call_procedure("sp_insertar_act_corresponsabilidad", user_id, actividad, horas)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -345,7 +345,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
     fact_ID = 0
     rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -353,7 +353,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
 async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, producto_ID: int | None):
     rows = call_procedure("sp_insertar_prod_factura_per", user_id, factura_ID, producto_ID)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -361,7 +361,7 @@ async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, pro
 async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
-        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+        return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
 
 
@@ -379,9 +379,9 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     try:
         cursor.callproc(procedure, list(args))
     except errors.ProgrammingError as e:
-        return [{'Key': 0, 'Answer': e}]
+        return [{'Key': 0, 'Answer': e.msg}]
     except errors.DatabaseError as e:
-        return [{'Key': 0, 'Answer': e}]
+        return [{'Key': 0, 'Answer': e.msg}]
 
     column_names, rows = [], []
     for answer in cursor.stored_results():
