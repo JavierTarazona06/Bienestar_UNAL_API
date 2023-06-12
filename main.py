@@ -91,6 +91,11 @@ async def select_programa_y_area_de_convocatoria(id_conv: int):
     rows = call_procedure('programa_area_convocatoria', id_conv)
     return jsonable_encoder(rows)
 
+@app.get("/convocatoria_inscrita", tags=["General"])
+async def select_convocatorias_inscritas(id_est: int):
+    rows = call_procedure('sp_conv_inscritas_est', id_est)
+    return jsonable_encoder(rows)
+
 # ------------------------------------------------ SALUD ---------------------------------------------------------
 
 
