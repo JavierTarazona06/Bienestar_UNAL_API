@@ -130,6 +130,14 @@ async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enferm
     return jsonable_encoder(rows)
 
 
+@app.delete("/eliminar_incapacidad/", tags=["Salud"])
+async def remove_incapacidad(incapacidad_id: int):
+    rows = call_procedure('pas_remove_incapacidad', incapacidad_id)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
 @app.get("/atencionessalud/{user_id}", tags=["Salud"])
 async def select_atencionsalud(user_id: int):
     rows = call_procedure('pas_view_atencionsalud', user_id)
@@ -147,6 +155,14 @@ async def add_atencionsalud(user_id: int, fecha: datetime.datetime, tipo: str):
 @app.put("/modificar_atencionsalud/", tags=["Salud"])
 async def edit_atencionsalud(atencionsalud_id: int, fecha: datetime.datetime, tipo: str):
     rows = call_procedure('pas_edit_atencionsalud', atencionsalud_id, fecha, tipo)
+    if len(rows) == 0:
+        return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
+    return jsonable_encoder(rows)
+
+
+@app.delete("/eliminar_atencionsalud/", tags=["Salud"])
+async def remove_atencionsalud(atencionsalud_id: int):
+    rows = call_procedure('pas_remove_atencionsalud', atencionsalud_id)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
     return jsonable_encoder(rows)
@@ -315,7 +331,7 @@ async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_
 
 
 @app.post("/insertar_producto_factura/{user_id}", tags=["Económico-Tienda"])
-async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, producto_ID:int | None):
+async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, producto_ID: int | None):
     rows = call_procedure("sp_insertar_prod_factura_per", user_id, factura_ID, producto_ID)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
@@ -323,7 +339,7 @@ async def insertar_producto_en_factura(user_id:int, factura_ID:int | None, produ
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id:int|None, mes: int = None, ano: int = None):
+async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
     rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
     if len(rows) == 0:
         return jsonable_encoder({'Key': 0, 'Answer': 'Done'})
