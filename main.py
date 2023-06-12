@@ -1,6 +1,6 @@
+import datetime
 import os
 import time
-import datetime
 from typing import Any
 from fastapi import FastAPI
 from sqlalchemy.engine import URL
@@ -39,6 +39,12 @@ app.add_middleware(
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
+# ------------------------------------------------ INICIO DE SESIÓN ---------------------------------------------------------
+
+@app.get("/inicia_sesion", tags=["Log In"])
+async def select_programa_y_area_de_convocatoria(id_conv: int):
+    rows = call_procedure('programa_area_convocatoria', id_conv)
+    return jsonable_encoder(rows)
 
 @app.get("/login")
 async def root(user: str, password: str) -> list[dict]:
@@ -324,12 +330,16 @@ async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
 
 @app.get("/info_factura/{user_id}", tags=["Económico-Tienda"])
 async def select_info_factura_tienda(user_id: int, tienda_id: int = None, factura_id: int = None):
+    if tienda_id == -1:
+        tienda_id = None
     rows = call_procedure("sp_info_factura_per", user_id, tienda_id, factura_id)
     return jsonable_encoder(rows)
 
 
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
 async def select_productos_tienda_nombre(tienda_id: int = None, nombre:str = None):
+    if tienda_id == -1:
+        tienda_id = None
     rows = call_procedure("sp_productos_tienda_nombre", tienda_id, nombre)
     return jsonable_encoder(rows)
 
