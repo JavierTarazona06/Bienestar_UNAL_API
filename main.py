@@ -39,7 +39,7 @@ app.add_middleware(
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
-# ------------------------------------------------ INICIO DE SESIÓN ---------------------------------------------------------
+# ------------------------------------------------ INICIO DE SESIÓN -----------------------------------------------
 
 @app.get("/login")
 async def root(user: str, password: str) -> list[dict]:
@@ -135,7 +135,7 @@ async def select_incapacidad(user_id: int):
 
 
 @app.post("/insertar_incapacidad/{user_id}", tags=["Salud"])
-async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
+async def add_incapacidad(user_id: int, fecha: datetime.date, enfermedad: str, dias: int):
     rows = call_procedure('pas_add_incapacidad', user_id, fecha, enfermedad, dias)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
@@ -143,7 +143,7 @@ async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: st
 
 
 @app.put("/modificar_incapacidad/", tags=["Salud"])
-async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
+async def edit_incapacidad(incapacidad_id: int, fecha: datetime.date, enfermedad: str, dias: int):
     rows = call_procedure('pas_edit_incapacidad', incapacidad_id, fecha, enfermedad, dias)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
