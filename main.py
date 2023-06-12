@@ -316,6 +316,10 @@ async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad: str = 
 
 @app.get("/conv_gestion_economica/{user_id}", tags=["Económico"])
 async def select_conv_gestion_economica_filtro(user_id: int, filter_min: float = None, filter_max: float = None):
+    if filter_min == -1:
+        filter_min = None
+    if filter_max == -1:
+        filter_max = None
     rows = call_procedure("sp_convocatoriagestioneconomica_filtro", user_id, filter_min, filter_max)
     return jsonable_encoder(rows)
 
