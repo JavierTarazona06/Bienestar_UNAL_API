@@ -375,6 +375,7 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     if connection is None:
         return [{'Key': 0, 'Answer': 'Not connected to the database'}]
 
+    # Call the stored procedure
     cursor = connection.cursor()
     try:
         cursor.callproc(procedure, list(args))
@@ -383,20 +384,25 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
     except errors.DatabaseError as e:
         return [{'Key': 0, 'Answer': e.msg}]
 
+    # Fetch all the rows
     column_names, rows = [], []
     for answer in cursor.stored_results():
         column_names.extend(answer.column_names)
         rows.extend(answer.fetchall())
 
+    # Return the result in a json format
     result = []
     if len(rows) != 0:
         for key, row in enumerate(rows):
             data = {'Key': key}
             for i, value in enumerate(row):
-                header = str(column_names[i]).replace('@',"")
+                header = str(column_names[i]).replace('@', "")
+                if type(value) == datetime.timedelta:
+                    value = str(value)
                 data[header] = value
             result.append(data)
-    
+
+    # End cursor and connection
     cursor.close()
     connection.commit()
 
