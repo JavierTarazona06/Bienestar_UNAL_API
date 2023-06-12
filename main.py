@@ -41,11 +41,6 @@ async def root():
 
 # ------------------------------------------------ INICIO DE SESIÓN ---------------------------------------------------------
 
-@app.get("/inicia_sesion", tags=["Log In"])
-async def select_programa_y_area_de_convocatoria(id_conv: int):
-    rows = call_procedure('programa_area_convocatoria', id_conv)
-    return jsonable_encoder(rows)
-
 @app.get("/login")
 async def root(user: str, password: str) -> list[dict]:
     global connection
@@ -297,6 +292,10 @@ async def select_conv_fomento_emprendimiento_filtro(nombre: str = None, tema: st
 
 @app.get("/conv_gestion_alimentaria/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str = None, lugar: str = None):
+    if comida == '':
+        comida = None
+    if lugar == '':
+        lugar = None
     rows = call_procedure("sp_convocatoriagestionalimentaria_filtro", user_id, comida, lugar)
     return jsonable_encoder(rows)
   
