@@ -392,7 +392,8 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
         for key, row in enumerate(rows):
             data = {'Key': key}
             for i, value in enumerate(row):
-                data[column_names[i]] = value
+                header = str(column_names[i]).replace('@',"")
+                data[header] = value
             result.append(data)
     
     cursor.close()
