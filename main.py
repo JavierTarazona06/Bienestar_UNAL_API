@@ -329,8 +329,8 @@ async def select_info_factura_tienda(user_id: int, tienda_id: int = None, factur
 
 
 @app.get("/productos_tienda", tags=["Económico-Tienda"])
-async def select_productos_tienda(tienda_id: int = None):
-    rows = call_procedure("sp_productos_tienda", tienda_id)
+async def select_productos_tienda_nombre(tienda_id: int = None, nombre:str = None):
+    rows = call_procedure("sp_productos_tienda_nombre", tienda_id, nombre)
     return jsonable_encoder(rows)
 
 
@@ -393,7 +393,8 @@ def call_procedure(procedure: str, *args: Any) -> list[dict]:
         for key, row in enumerate(rows):
             data = {'Key': key}
             for i, value in enumerate(row):
-                data[column_names[i]] = value
+                header = str(column_names[i]).replace('@',"")
+                data[header] = value
             result.append(data)
     
     cursor.close()
