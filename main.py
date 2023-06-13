@@ -60,8 +60,8 @@ async def root(user: str, password: str) -> list[dict]:
     while True:
         try:
             connection = engine.raw_connection()
-            message = 'Done'
-            break
+            return jsonable_encoder([{'Key': 0, 'Answer': 'Done'}])
+
         except errors.DatabaseError as error:
             print(error)
             message = 'Wrong username or password'
@@ -72,7 +72,8 @@ async def root(user: str, password: str) -> list[dict]:
             time.sleep(5)
             tries += 1
 
-    return jsonable_encoder([{'Key': 0, 'Answer': message}])
+    return None
+
 
 
 # ------------------------------------------------ GENERAL ---------------------------------------------------------
