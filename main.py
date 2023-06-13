@@ -39,12 +39,7 @@ app.add_middleware(
 async def root():
     return jsonable_encoder('MAIN PAGE')
 
-# ------------------------------------------------ INICIO DE SESIÓN ---------------------------------------------------------
-
-@app.get("/inicia_sesion", tags=["Log In"])
-async def select_programa_y_area_de_convocatoria(id_conv: int):
-    rows = call_procedure('programa_area_convocatoria', id_conv)
-    return jsonable_encoder(rows)
+# ------------------------------------------------ INICIO DE SESIÓN -----------------------------------------------
 
 @app.get("/login")
 async def root(user: str, password: str) -> list[dict]:
@@ -96,6 +91,11 @@ async def select_programa_y_area_de_convocatoria(id_conv: int):
     rows = call_procedure('programa_area_convocatoria', id_conv)
     return jsonable_encoder(rows)
 
+@app.get("/convocatorias_usuario", tags=["General"])
+async def select_convocatorias_usuario(cedula: int):
+    rows = call_procedure('sp_consultar_mis_convocatorias', cedula)
+    return jsonable_encoder(rows)
+
 # ------------------------------------------------ SALUD ---------------------------------------------------------
 
 
@@ -140,7 +140,7 @@ async def select_incapacidad(user_id: int):
 
 
 @app.post("/insertar_incapacidad/{user_id}", tags=["Salud"])
-async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
+async def add_incapacidad(user_id: int, fecha: datetime.date, enfermedad: str, dias: int):
     rows = call_procedure('pas_add_incapacidad', user_id, fecha, enfermedad, dias)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
@@ -148,7 +148,7 @@ async def add_incapacidad(user_id: int, fecha: datetime.datetime, enfermedad: st
 
 
 @app.put("/modificar_incapacidad/", tags=["Salud"])
-async def edit_incapacidad(incapacidad_id: int, fecha: datetime.datetime, enfermedad: str, dias: int):
+async def edit_incapacidad(incapacidad_id: int, fecha: datetime.date, enfermedad: str, dias: int):
     rows = call_procedure('pas_edit_incapacidad', incapacidad_id, fecha, enfermedad, dias)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
@@ -233,12 +233,6 @@ async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetim
     return jsonable_encoder(rows)
 
 
-@app.get("/convocatorias_usuario", tags=["Deporte"])
-async def select_convocatorias_usuario(cedula: int):
-    rows = call_procedure('sp_consultar_mis_convocatorias', cedula)
-    return jsonable_encoder(rows)
-
-
 @app.get("/taller_evento_proyecto_deportes", tags=["Deporte"])
 async def select_all_deportes(id_programa: int):
     rows = call_procedure('pas_consultar_eventoTaller_programa', id_programa)
@@ -297,6 +291,10 @@ async def select_conv_fomento_emprendimiento_filtro(nombre: str = None, tema: st
 
 @app.get("/conv_gestion_alimentaria/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str = None, lugar: str = None):
+    if comida == '':
+        comida = None
+    if lugar == '':
+        lugar = None
     rows = call_procedure("sp_convocatoriagestionalimentaria_filtro", user_id, comida, lugar)
     return jsonable_encoder(rows)
   
@@ -305,6 +303,10 @@ async def select_conv_gestion_alimentaria_filtro(user_id: int, comida: str = Non
 
 @app.get("/conv_gestion_alojamiento/{user_id}", tags=["Económico"])
 async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad: str = None, tipo: str = None):
+    if localidad == '':
+        localidad = None
+    if tipo == '':
+        tipo = None
     rows = call_procedure("sp_convocatoriagestionalojamiento_filtro", user_id, localidad, tipo)
     return jsonable_encoder(rows)
 
@@ -313,6 +315,10 @@ async def select_conv_gestion_alojamiento_filtro(user_id: int, localidad: str = 
 
 @app.get("/conv_gestion_economica/{user_id}", tags=["Económico"])
 async def select_conv_gestion_economica_filtro(user_id: int, filter_min: float = None, filter_max: float = None):
+    if filter_min == -1:
+        filter_min = None
+    if filter_max == -1:
+        filter_max = None
     rows = call_procedure("sp_convocatoriagestioneconomica_filtro", user_id, filter_min, filter_max)
     return jsonable_encoder(rows)
 
@@ -321,6 +327,8 @@ async def select_conv_gestion_economica_filtro(user_id: int, filter_min: float =
 
 @app.get("/conv_gestion_transporte/{user_id}", tags=["Económico"])
 async def select_conv_gestion_transporte_filtro(user_id: int, tipo: str = None):
+    if tipo == '':
+        tipo = None
     rows = call_procedure("sp_convocatoriagestiontransporte_filtro", user_id, tipo)
     return jsonable_encoder(rows)
 
@@ -352,8 +360,7 @@ async def select_tiendas_producto(producto_id: int | None):
 
 @app.post("/insertar_factura", tags=["Económico-Tienda"])
 async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_ID: int = 1):
-    fact_ID = 0
-    rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
+    rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
@@ -368,8 +375,8 @@ async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, pro
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
-    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
+async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None, factID:int = None):
+    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano, factID)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
