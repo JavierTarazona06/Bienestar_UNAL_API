@@ -60,7 +60,8 @@ async def root(user: str, password: str) -> list[dict]:
     while True:
         try:
             connection = engine.raw_connection()
-            return jsonable_encoder([{'Key': 0, 'Answer': 'Done'}])
+            message = 'Done'
+            break
 
         except errors.DatabaseError as error:
             print(error)
@@ -72,7 +73,7 @@ async def root(user: str, password: str) -> list[dict]:
             time.sleep(5)
             tries += 1
 
-    return None
+    return jsonable_encoder([{'Key': 0, 'Answer': message}])
 
 
 
