@@ -360,8 +360,7 @@ async def select_tiendas_producto(producto_id: int | None):
 
 @app.post("/insertar_factura", tags=["Económico-Tienda"])
 async def insertar_factura(cliente_ID: int | None, detalle: str = "N.A", tienda_ID: int = 1):
-    fact_ID = 0
-    rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID, fact_ID)
+    rows = call_procedure("insertar_factura", detalle, tienda_ID, cliente_ID)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
