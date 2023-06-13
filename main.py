@@ -91,9 +91,9 @@ async def select_programa_y_area_de_convocatoria(id_conv: int):
     rows = call_procedure('programa_area_convocatoria', id_conv)
     return jsonable_encoder(rows)
 
-@app.get("/convocatoria_inscrita", tags=["General"])
-async def select_convocatorias_inscritas(id_est: int):
-    rows = call_procedure('sp_conv_inscritas_est', id_est)
+@app.get("/convocatorias_usuario", tags=["General"])
+async def select_convocatorias_usuario(cedula: int):
+    rows = call_procedure('sp_consultar_mis_convocatorias', cedula)
     return jsonable_encoder(rows)
 
 # ------------------------------------------------ SALUD ---------------------------------------------------------
@@ -230,12 +230,6 @@ async def add_convocatoria(cedula: int, id_conv: int, fecha_inscripcion: datetim
     rows = call_procedure('pas_participar_convocatoria', cedula, id_conv, fecha_inscripcion)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
-    return jsonable_encoder(rows)
-
-
-@app.get("/convocatorias_usuario", tags=["Deporte"])
-async def select_convocatorias_usuario(cedula: int):
-    rows = call_procedure('sp_consultar_mis_convocatorias', cedula)
     return jsonable_encoder(rows)
 
 
