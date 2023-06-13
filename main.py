@@ -375,8 +375,8 @@ async def insertar_producto_en_factura(user_id: int, factura_ID: int | None, pro
 
 
 @app.delete("/eliminar_factura/{user_id}", tags=["Económico-Tienda"])
-async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None):
-    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano)
+async def eliminar_factura(user_id: int | None, mes: int = None, ano: int = None, factID:int = None):
+    rows = call_procedure("sp_eliminar_factura_usuario_tiempo", user_id, mes, ano, factID)
     if len(rows) == 0:
         return jsonable_encoder([{'Key': 0, 'Answer': 'Realizado'}])
     return jsonable_encoder(rows)
